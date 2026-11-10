@@ -3,17 +3,17 @@ import { open, type Database } from "sqlite"
 
 let db: Database | undefined
 
-export async function connectDb(): Promise<Database> {
+export async function connectDB(): Promise<Database> {
     const filename = process.env.DB_PATH
     if (!filename) {
-        throw new Error("DB_PATH is no set in .env")
+        throw new Error("DB_PATH is not set in .env")
     }
 
     db = await open({
         filename,
         driver: sqlite3.Database
     })
-
+    await db.exec("PRAGMA foreign_keys =ON;")
     return db
 }
 

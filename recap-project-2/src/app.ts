@@ -1,5 +1,6 @@
 import express from "express";
 import nunjucks from "nunjucks"
+import { connectDB,closeDB } from "./models/db";
 
 const app = express();
 const port = Number(process.env.PORT);
@@ -14,6 +15,18 @@ app.set("view engine", "html")
 app.use(express.static("public"))
 
 app.get('/', (req, res) => res.render('index'))
+
+await connectDB()
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
+
+async function shutdown(signal: string) {
+  console.log(`\n${signal} received, closing database...`);
+  await closeDB();
+  console.log("Database closed. Bye!");
+  process.exit(0);
+}
+
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", () => shutdown("SIGTERM"));
