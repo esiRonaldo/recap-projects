@@ -1,6 +1,8 @@
 import express from "express";
 import nunjucks from "nunjucks"
-import { connectDB,closeDB } from "./models/db";
+import { connectDB, closeDB } from "./models/db";
+import websiteRouter from "./routes/websiteRoutes"
+
 
 const app = express();
 const port = Number(process.env.PORT);
@@ -14,7 +16,7 @@ app.set("view engine", "html")
 
 app.use(express.static("public"))
 
-app.get('/', (req, res) => res.render('index'))
+app.use('/', websiteRouter)
 
 await connectDB()
 app.listen(port, () => {
