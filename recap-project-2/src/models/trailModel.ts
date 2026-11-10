@@ -13,6 +13,7 @@ export async function getAllTrails(): Promise<TrailWithRegion[]> {
     );
 }
 //TODO: how to debug qeury and model when still no controller or router we have
+//data validation
 export async function getTrailBySlug(slug: string): Promise<TrailWithRegion | undefined> {
     const db = getDB();
 

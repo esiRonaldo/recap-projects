@@ -1,5 +1,14 @@
 {% extends "base.html"%}
+
+{%from "macros/trailCard.html" import trailCard%}
+
+{%block title%}Trails . Trail Guide {%endblock%}
+
 {% block content %}
-<h1>Hello</h1>
-<p>it is working </p>
+<h1>All trails</h1>
+
+{% for trail in trails%}
+{{trailCard(trail)}}
+{% endfor%}
+
 {% endblock %}

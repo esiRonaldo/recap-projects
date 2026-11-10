@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{%block title %} {{trail.title }}{% endblock %}
+
+
+{% block content %}
+
+<article>
+    <header>
+        <h1>{{trail.title}}</h1>
+        <p>{{trail.region_name}}, {{trail.region_country}}</p>
+    </header>
+
+    {% if trail.image_url %}
+    <img src="{{trail.image_url}}" alt="{{trail.title}}" />
+    {% endif %}
+
+    <p>
+        <mark>{{trail.difficulty}}</mark>
+        {{trail.distance_km}} km
+    </p>
+
+    {{trail.description | safe}}
+
+    <footer>
+        <small>Added on {{ created_at_formatted }}</small>
+    </footer>
+</article>
+
+<a href="/">All Trails</a>
+
+{% endblock%}
