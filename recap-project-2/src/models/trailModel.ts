@@ -12,7 +12,7 @@ export async function getAllTrails(): Promise<TrailWithRegion[]> {
      ORDER BY trails.created_at DESC`
     );
 }
-//TODO: how to debug qeury and model
+//TODO: how to debug qeury and model when still no controller or router we have
 export async function getTrailBySlug(slug: string): Promise<TrailWithRegion | undefined> {
     const db = getDB();
 
