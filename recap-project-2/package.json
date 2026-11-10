@@ -1,0 +1,28 @@
+{
+  "name": "recap-project-2",
+  "module": "src/app.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch src/app.ts",
+    "typecheck": "bun check",
+    "db:seed":"sqlite3 data/trail-guide.db < data/seed.sql"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/express": "^5.0.6",
+    "@types/nunjucks": "^3.2.6",
+    "@types/sanitize-html": "^2.16.2"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  },
+  "dependencies": {
+    "chokidar": "^6.0.0",
+    "express": "^5.3.0",
+    "nunjucks": "^3.2.4",
+    "sanitize-html": "^2.18.1",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^6.0.1"
+  }
+}
