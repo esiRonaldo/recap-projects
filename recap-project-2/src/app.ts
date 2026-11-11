@@ -2,6 +2,7 @@ import express from "express";
 import nunjucks from "nunjucks"
 import { connectDB, closeDB } from "./models/db";
 import websiteRouter from "./routes/websiteRoutes"
+import adminRouter from "./routes/adminRoutes"
 import { logger } from "./middleware/logger";
 
 
@@ -18,6 +19,7 @@ app.set("view engine", "html")
 app.use(express.static("public"))
 app.use(logger)
 app.use('/', websiteRouter)
+app.use('/admin', adminRouter)
 
 await connectDB()
 app.listen(port, () => {

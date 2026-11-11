@@ -2,21 +2,21 @@ import { getDB } from "./db";
 import type { TrailWithRegion } from "./types";
 
 export async function getAllTrails(): Promise<TrailWithRegion[]> {
-    const db = getDB();
-    return db.all<TrailWithRegion[]>(
-        `SELECT trails.*,
+  const db = getDB();
+  return db.all<TrailWithRegion[]>(
+    `SELECT trails.*,
             regions.name AS region_name,
             regions.country AS region_country
      FROM trails
      INNER JOIN regions ON trails.region_id = regions.id
      ORDER BY trails.created_at DESC`
-    );
+  );
 }
 
 export async function getTrailBySlug(slug: string): Promise<TrailWithRegion | undefined> {
-    const db = getDB();
+  const db = getDB();
 
-    return db.get<TrailWithRegion>(`
+  return db.get<TrailWithRegion>(`
     SELECT trails.*,
            regions.name AS region_name,
            regions.country AS region_country
@@ -27,8 +27,8 @@ export async function getTrailBySlug(slug: string): Promise<TrailWithRegion | un
 }
 
 export async function getTrailsByRegionId(regionId: number): Promise<TrailWithRegion[]> {
-    const db = getDB()
-    return db.all<TrailWithRegion[]>(`
+  const db = getDB()
+  return db.all<TrailWithRegion[]>(`
         SELECT trails.*,
         regions.name AS region_name,
         regions.country AS region_country
@@ -37,4 +37,10 @@ export async function getTrailsByRegionId(regionId: number): Promise<TrailWithRe
             where trails.region_id=?
             ORDER BY trails.created_at DESC
           `, regionId)
-} 
+}
+
+export async function deleteTrail(id: number): Promise<void> {
+  console.log('delete trail')
+  const db = getDB()
+  await db.run(`DELETE FROM trails WHERE id=?`, id)
+}
