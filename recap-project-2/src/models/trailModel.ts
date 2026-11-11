@@ -1,5 +1,5 @@
 import { getDB } from "./db";
-import type { Trail, TrailWithRegion } from "./types";
+import type { TrailWithRegion } from "./types";
 
 export async function getAllTrails(): Promise<TrailWithRegion[]> {
     const db = getDB();
@@ -12,8 +12,7 @@ export async function getAllTrails(): Promise<TrailWithRegion[]> {
      ORDER BY trails.created_at DESC`
     );
 }
-//TODO: how to debug qeury and model when still no controller or router we have
-//data validation
+
 export async function getTrailBySlug(slug: string): Promise<TrailWithRegion | undefined> {
     const db = getDB();
 
@@ -26,3 +25,16 @@ export async function getTrailBySlug(slug: string): Promise<TrailWithRegion | un
     WHERE trails.slug = ?
   `, slug);
 }
+
+export async function getTrailsByRegionId(regionId: number): Promise<TrailWithRegion[]> {
+    const db = getDB()
+    return db.all<TrailWithRegion[]>(`
+        SELECT trails.*,
+        regions.name AS region_name,
+        regions.country AS region_country
+          FROM trails
+          INNER JOIN regions ON trails.region_id = regions.id
+            where trails.region_id=?
+            ORDER BY trails.created_at DESC
+          `, regionId)
+} 

@@ -1,0 +1,17 @@
+{% extends "base.html"%}
+
+{%block title%}Regions . Trail Guide {%endblock%}
+
+{% block content %}
+<h1>All Regions</h1>
+
+<ul>
+    {% for region in regions %}
+    <li>
+        <a href="/regions/{{ region.slug }}">{{ region.name }}</a>
+        ({{ region.country }})
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

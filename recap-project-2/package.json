@@ -7,7 +7,6 @@
     "dev": "bun --watch src/app.ts",
     "typecheck": "bun check",
     "db:seed":"sqlite3 data/trail-guide.db < data/seed.sql"
-// best way to run ?
   },
   "devDependencies": {
     "@types/bun": "latest",
