@@ -2,6 +2,7 @@ import express from "express";
 import nunjucks from "nunjucks"
 import { connectDB, closeDB } from "./models/db";
 import websiteRouter from "./routes/websiteRoutes"
+import { logger } from "./middleware/logger";
 
 
 const app = express();
@@ -15,7 +16,7 @@ nunjucks.configure("views", {
 app.set("view engine", "html")
 
 app.use(express.static("public"))
-
+app.use(logger)
 app.use('/', websiteRouter)
 
 await connectDB()
