@@ -18,6 +18,8 @@ app.set("view engine", "html")
 
 app.use(express.static("public"))
 app.use(logger)
+app.use(express.urlencoded({ extended: true }))
+
 app.use('/', websiteRouter)
 app.use('/admin', adminRouter)
 

@@ -21,3 +21,5 @@ export type TrailWithRegion = Trail & {
     region_name: string
     region_country: string
 }
+
+export type TrailInput = Omit<Trail, "id" | "slug" | "created_at">;

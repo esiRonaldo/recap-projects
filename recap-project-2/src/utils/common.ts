@@ -5,3 +5,12 @@ export function formatDate(timestamp: number): string {
         year: "numeric"
     });
 }
+
+export function slugify(text: string): string {
+    return text
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/[\s-]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+}

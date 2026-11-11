@@ -4,8 +4,6 @@ import { formatDate } from "../utils/common";
 
 export async function listTrails(req: Request, res: Response) {
     const trails = await getAllTrails()
-    console.log('trails')
-    console.log(trails)
     res.render('index', { trails })
 }
 //why slug Object?
@@ -16,7 +14,5 @@ export async function showTrail(req: Request<{ slug: string }>, res: Response): 
         res.status(404).render("404", { message: "This trail does not exist." });
         return
     }
-    console.log('trail')
-    console.log(trail)
     res.render("trail", { trail, created_at_formatted: formatDate(trail.created_at) })
 }
