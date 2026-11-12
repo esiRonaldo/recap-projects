@@ -4,18 +4,26 @@ import { getTrailsByRegionId } from "../models/trailModel";
 
 
 export async function listApiRegions(req: Request, res: Response): Promise<void> {
-    const regions = await getAllRegions();
-    res.json(regions);
+    try {
+        const regions = await getAllRegions();
+        res.json(regions);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to load regions" });
+    }
 }
 
 export async function listApiRegionTrails(req: Request<{ slug: string }>, res: Response): Promise<void> {
-    const region = await getRegionBySlug(req.params.slug);
+    try {
+        const region = await getRegionBySlug(req.params.slug);
 
-    if (!region) {
-        res.status(404).json({ error: "Region not found" });
-        return;
+        if (!region) {
+            res.status(404).json({ error: "Region not found" });
+            return;
+        }
+
+        const trails = await getTrailsByRegionId(region.id);
+        res.json(trails);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to load region trails" });
     }
-
-    const trails = await getTrailsByRegionId(region.id);
-    res.json(trails);
 }
