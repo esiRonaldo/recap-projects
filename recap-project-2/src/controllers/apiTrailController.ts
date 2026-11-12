@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { addTrail, getAllTrails, getTrailById, getTrailBySlug, updateTrail } from "../models/trailModel";
+import { addTrail, deleteTrail, getAllTrails, getTrailById, getTrailBySlug, updateTrail } from "../models/trailModel";
 import type { TrailInput } from "../models/types";
 import { slugify } from "../utils/common";
 import sanitizeHtml from "sanitize-html";
@@ -38,8 +38,8 @@ export async function createApiTrail(req: Request, res: Response): Promise<void>
 
 export async function replaceApiTrail(req: Request<{ id: string }>, res: Response): Promise<void> {
     const id = Number(req.params.id)
-    const trails = await getTrailById(id);
-    if (!trails) {
+    const oldTrail = await getTrailById(id);
+    if (!oldTrail) {
         res.status(404).json({ error: 'Trail not found' })
         return
     }
@@ -56,6 +56,18 @@ export async function replaceApiTrail(req: Request<{ id: string }>, res: Respons
         image_url: req.body.image_url ?? null,
     }
     await updateTrail(id, data)
-    const trail = await getTrailBySlug(slugify(data.title))
-    res.json(trail);
+    const updatedTrail = await getTrailBySlug(slugify(data.title))
+    res.json(updatedTrail);
+}
+
+export async function deleteApiTrail(req: Request<{ id: string }>, res: Response): Promise<void> {
+    const id = Number(req.params.id)
+    const trail = await getTrailById(id);
+    if (!trail) {
+        res.status(404).json({ error: 'Trail not found' })
+        return
+    }
+
+    await deleteTrail(id)
+    res.status(204).end();
 }
