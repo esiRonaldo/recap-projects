@@ -1,5 +1,5 @@
 import { fetchBook } from "./api.js";
-import { renderFavoriteCount } from "./favorites.js";
+import { renderFavoriteCount } from "./favorite-store.js";
 import type { Book } from "./types.js";
 
 const titleHeading = document.getElementById("book-title");
