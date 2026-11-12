@@ -1,6 +1,11 @@
 import express from "express";
 import nunjucks from "nunjucks"
-import { connectDB,closeDB } from "./models/db";
+import { connectDB, closeDB } from "./models/db";
+import websiteRouter from "./routes/websiteRoutes"
+import adminRouter from "./routes/adminRoutes"
+import apiRouter from "./routes/apiRoutes"
+import { logger } from "./middleware/logger";
+
 
 const app = express();
 const port = Number(process.env.PORT);
@@ -13,8 +18,12 @@ nunjucks.configure("views", {
 app.set("view engine", "html")
 
 app.use(express.static("public"))
-
-app.get('/', (req, res) => res.render('index'))
+app.use(logger)
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+app.use('/', websiteRouter)
+app.use('/admin', adminRouter)
+app.use('/api', apiRouter)
 
 await connectDB()
 app.listen(port, () => {

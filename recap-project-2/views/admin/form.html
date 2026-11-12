@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{% if trail.id %}Edit trail{% else %}New trail{% endif %} · Trail Guide{% endblock %}
+
+{% block content %}
+<h1>{% if trail.id %}Edit trail{% else %}New trail{% endif %}</h1>
+
+{% if error %}
+<p><mark>{{ error }}</mark></p>
+{% endif %}
+
+<form method="post" action="{% if trail.id %}/admin/trails/{{ trail.id }}{% else %}/admin/trails{% endif %}">
+    <label>
+        Title
+        <input type="text" name="title" value="{{ trail.title }}">
+    </label>
+
+    <label>
+        Region
+        <select name="region_id">
+            {% for region in regions %}
+            <option value="{{ region.id }}" {% if trail and trail.region_id == region.id %}selected{% endif %}>
+                {{ region.name }} ({{ region.country }})
+            </option>
+            {% endfor %}
+        </select>
+    </label>
+
+    <label>
+        Difficulty
+        <select name="difficulty">
+            {% for level in ["easy", "moderate", "hard"] %}
+            <option value="{{ level }}" {% if trail and trail.difficulty == level %}selected{% endif %}>
+                {{ level }}
+            </option>
+            {% endfor %}
+        </select>
+    </label>
+
+    <label>
+        Distance (km)
+        <input type="number" name="distance_km" step="0.1" min="0" value="{{ trail.distance_km }}">
+    </label>
+
+    <label>
+        Image URL
+        <input type="url" name="image_url" value="{{ trail.image_url }}">
+    </label>
+
+    <label>
+        Description
+        <textarea name="description" rows="6">{{ trail.description }}</textarea>
+    </label>
+
+    <button type="submit">Save</button>
+</form>
+{% endblock %}

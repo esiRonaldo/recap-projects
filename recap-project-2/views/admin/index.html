@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Admin · Trail Guide{% endblock %}
+
+{% block content %}
+<h1>Admin</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Region</th>
+            <th>Difficulty</th>
+            <th>Distance</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for trail in trails %}
+        <tr>
+            <td><a href="/trails/{{ trail.slug }}">{{ trail.title }}</a></td>
+            <td>{{ trail.region_name }}</td>
+            <td>{{ trail.difficulty }}</td>
+            <td>{{ trail.distance_km }} km</td>
+            <td>
+                <a href="/admin/trails/{{ trail.id }}/edit">Edit</a>
+                <form method="post" action="/admin/trails/{{ trail.id }}/delete">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
