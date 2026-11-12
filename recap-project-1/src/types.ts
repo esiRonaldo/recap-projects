@@ -1,4 +1,6 @@
-export type Currency = "EUR" | "USD" | "GBP" | "CNY" | "RUB";
+const CURRENCIES = ["EUR", "USD", "GBP", "CNY", "RUB"] as const;
+export type Currency = (typeof CURRENCIES)[number];
+
 export interface Book {
   title: string;
   subtitle?: string;
@@ -17,13 +19,7 @@ export interface Book {
 export type FavoriteBook = Pick<Book, "title" | "isbn" | "author" | "publisher">;
 
 function isCurrency(value: unknown): value is Currency {
-  return (
-    value === "EUR" ||
-    value === "USD" ||
-    value === "GBP" ||
-    value === "CNY" ||
-    value === "RUB"
-  );
+  return CURRENCIES.some((currency) => currency === value);
 }
 
 
