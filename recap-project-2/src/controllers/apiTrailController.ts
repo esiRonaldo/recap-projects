@@ -5,7 +5,7 @@ import { slugify } from "../utils/common";
 import sanitizeHtml from "sanitize-html";
 import { getAllRegions } from "../models/regionModel";
 
-
+//TODO: refactor
 async function validateApiTrail(body: Record<string, any>): Promise<string | null> {
     if (!body) return "Body is required.";
     if (!body.title) return "title is required.";
