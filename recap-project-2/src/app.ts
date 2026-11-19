@@ -27,6 +27,10 @@ app.use('/', websiteRouter)
 app.use('/admin', adminRouter)
 app.use('/api', apiRouter)
 
+app.use((req, res) => {
+  res.status(404).render("404", { message: "This page does not exist." })
+})
+
 await connectDB()
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

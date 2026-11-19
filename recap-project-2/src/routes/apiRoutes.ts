@@ -16,4 +16,8 @@ router.delete('/trails/:id', apiKey, rateLimit, deleteApiTrail)
 router.get('/regions', listApiRegions)
 router.get('/regions/:slug/trails', listApiRegionTrails)
 
+router.use((req, res) => {
+    res.status(404).json({ error: "Not found" })
+})
+
 export default router
