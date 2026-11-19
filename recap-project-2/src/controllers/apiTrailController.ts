@@ -27,6 +27,17 @@ async function validateApiTrail(body: Record<string, any>, id?: number): Promise
     return errorMessages;
 }
 
+function readApiTrail(body: Record<string, any>): TrailInput {
+    return {
+        region_id: body.region_id,
+        title: body.title,
+        difficulty: body.difficulty,
+        distance_km: body.distance_km,
+        description: sanitizeDescription(body.description),
+        image_url: body.image_url ?? null,
+    }
+}
+
 export async function showApiTrail(req: Request<{ slug: string }>, res: Response): Promise<void> {
     try {
         const trail = await getTrailBySlug(req.params.slug)
@@ -57,15 +68,7 @@ export async function createApiTrail(req: Request, res: Response): Promise<void>
             return
         }
 
-        const data: TrailInput = {
-            region_id: req.body.region_id,
-            title: req.body.title,
-            difficulty: req.body.difficulty,
-            distance_km: req.body.distance_km,
-            description: sanitizeDescription(req.body.description),
-            image_url: req.body.image_url ?? null,
-        }
-
+        const data = readApiTrail(req.body)
         await addTrail(data)
         const trail = await getTrailBySlug(slugify(data.title))
         res.status(201).json(trail)
@@ -89,14 +92,7 @@ export async function replaceApiTrail(req: Request<{ id: string }>, res: Respons
             return
         }
 
-        const data: TrailInput = {
-            region_id: req.body.region_id,
-            title: req.body.title,
-            difficulty: req.body.difficulty,
-            distance_km: req.body.distance_km,
-            description: sanitizeDescription(req.body.description),
-            image_url: req.body.image_url ?? null,
-        }
+        const data = readApiTrail(req.body)
         await updateTrail(id, data)
         const updatedTrail = await getTrailBySlug(slugify(data.title))
         res.json(updatedTrail);
