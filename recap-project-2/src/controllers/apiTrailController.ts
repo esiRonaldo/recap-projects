@@ -134,6 +134,13 @@ export async function patchApiTrail(req: Request<{ id: string }>, res: Response)
             description: sanitizeDescription(body.description ?? oldTrail.description),
             image_url: body.image_url ?? oldTrail.image_url,
         }
+
+        const errorMessages = await validateApiTrail(data)
+        if (errorMessages.length > 0) {
+            res.status(400).json({ errors: errorMessages })
+            return
+        }
+
         await updateTrail(id, data)
         const updatedTrail = await getTrailBySlug(slugify(data.title))
         res.json(updatedTrail);
