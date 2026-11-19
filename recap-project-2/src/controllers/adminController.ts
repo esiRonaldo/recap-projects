@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { addTrail, deleteTrail, getAllTrails, getTrailById, updateTrail } from "../models/trailModel";
 import { getAllRegions } from "../models/regionModel";
 import type { Trail, TrailInput } from "../models/types";
-import sanitizeHtml from "sanitize-html";
+import { sanitizeDescription } from "../utils/common";
 
 export async function listAdminTrails(req: Request, res: Response): Promise<void> {
     const trails = await getAllTrails()
@@ -14,18 +14,13 @@ export async function removeTrail(req: Request<{ id: string }>, res: Response): 
     res.redirect('/admin')
 }
 
-const descriptionOptions: sanitizeHtml.IOptions = {
-    allowedTags: ["p", "strong", "em", "ul", "ol", "li", "a"],
-    allowedAttributes: { a: ["href"] },
-};
-
 function readTrailForm(body: Record<string, string>): TrailInput {
     return {
         region_id: Number(body.region_id),
         title: body.title ?? "",
         difficulty: body.difficulty as Trail["difficulty"],
         distance_km: Number(body.distance_km),
-        description: sanitizeHtml(body.description ?? "", descriptionOptions) || null,
+        description: sanitizeDescription(body.description),
         image_url: body.image_url || null,
     };
 }
@@ -43,11 +38,11 @@ export async function newTrailForm(req: Request, res: Response): Promise<void> {
 
 
 export async function createTrail(req: Request, res: Response): Promise<void> {
-    const error = validateTrailForm(req.body);
+    const errorMessage = validateTrailForm(req.body);
 
-    if (error) {
+    if (errorMessage) {
         const regions = await getAllRegions();
-        res.status(400).render("admin/form", { trail: req.body, regions, error });
+        res.status(400).render("admin/form", { trail: req.body, regions, error: errorMessage });
         return;
     }
 
@@ -69,11 +64,11 @@ export async function editTrailForm(req: Request<{ id: string }>, res: Response)
 
 export async function saveTrail(req: Request<{ id: string }>, res: Response): Promise<void> {
     const id = Number(req.params.id);
-    const error = validateTrailForm(req.body);
+    const errorMessage = validateTrailForm(req.body);
 
-    if (error) {
+    if (errorMessage) {
         const regions = await getAllRegions();
-        res.status(400).render("admin/form", { trail: { ...req.body, id }, regions, error });
+        res.status(400).render("admin/form", { trail: { ...req.body, id }, regions, error: errorMessage });
         return;
     }
 

@@ -54,15 +54,17 @@ export async function addTrail(data: TrailInput): Promise<void> {
   const db = getDB();
   await db.run(
     `INSERT INTO trails (region_id, title, slug, difficulty, distance_km, description, image_url, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    data.region_id,
-    data.title,
-    slugify(data.title),
-    data.difficulty,
-    data.distance_km,
-    data.description,
-    data.image_url,
-    Math.floor(Date.now() / 1000)
+         VALUES (@region_id, @title, @slug, @difficulty, @distance_km, @description, @image_url, @created_at)`,
+    {
+      "@region_id": data.region_id,
+      "@title": data.title,
+      "@slug": slugify(data.title),
+      "@difficulty": data.difficulty,
+      "@distance_km": data.distance_km,
+      "@description": data.description,
+      "@image_url": data.image_url,
+      "@created_at": Math.floor(Date.now() / 1000),
+    }
   );
 }
 
@@ -70,15 +72,18 @@ export async function updateTrail(id: number, data: TrailInput): Promise<void> {
   const db = getDB();
   await db.run(
     `UPDATE trails
-         SET region_id = ?, title = ?, slug = ?, difficulty = ?, distance_km = ?, description = ?, image_url = ?
-         WHERE id = ?`,
-    data.region_id,
-    data.title,
-    slugify(data.title),
-    data.difficulty,
-    data.distance_km,
-    data.description,
-    data.image_url,
-    id
+         SET region_id = @region_id, title = @title, slug = @slug, difficulty = @difficulty,
+             distance_km = @distance_km, description = @description, image_url = @image_url
+         WHERE id = @id`,
+    {
+      "@id": id,
+      "@region_id": data.region_id,
+      "@title": data.title,
+      "@slug": slugify(data.title),
+      "@difficulty": data.difficulty,
+      "@distance_km": data.distance_km,
+      "@description": data.description,
+      "@image_url": data.image_url,
+    }
   );
 }
