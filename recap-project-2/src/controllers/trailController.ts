@@ -2,11 +2,11 @@ import { getAllTrails, getTrailBySlug } from "../models/trailModel";
 import type { Request, Response } from "express";
 import { formatDate } from "../utils/common";
 
-export async function listTrails(req: Request, res: Response) {
+export async function listTrails(req: Request, res: Response): Promise<void> {
     const trails = await getAllTrails()
     res.render('index', { trails })
 }
-//why slug Object?
+
 export async function showTrail(req: Request<{ slug: string }>, res: Response): Promise<void> {
     const trail = await getTrailBySlug(req.params.slug)
 
