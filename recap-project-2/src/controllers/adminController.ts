@@ -28,6 +28,11 @@ function readTrailForm(body: Record<string, string>): TrailInput {
 async function validateTrailForm(body: Record<string, string>, id?: number): Promise<string | null> {
     if (!body.title?.trim()) return "Title is required.";
     if (!body.distance_km?.trim()) return "Distance is required.";
+    if (!(Number(body.distance_km) > 0)) return "Distance must be a number greater than 0.";
+    if (!["easy", "moderate", "hard"].includes(body.difficulty ?? "")) return "Difficulty must be easy, moderate or hard.";
+
+    const regions = await getAllRegions();
+    if (!regions.some((region) => region.id === Number(body.region_id))) return "Please choose a valid region.";
 
     const sameSlugTrail = await getTrailBySlug(slugify(body.title));
     if (sameSlugTrail && sameSlugTrail.id !== id) return "A trail with this title already exists.";
