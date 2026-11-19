@@ -7,8 +7,15 @@
 {% block content %}
 <h1>All trails</h1>
 
+<form method="get" action="/" role="search">
+    <input type="search" name="q" placeholder="Search trails" value="{{ q }}">
+    <button type="submit">Search</button>
+</form>
+
 {% for trail in trails%}
 {{trailCard(trail)}}
+{% else %}
+<p>No trails found.</p>
 {% endfor%}
 
 {% endblock %}
