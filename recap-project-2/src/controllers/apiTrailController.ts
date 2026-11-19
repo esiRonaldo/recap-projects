@@ -115,3 +115,30 @@ export async function deleteApiTrail(req: Request<{ id: string }>, res: Response
         res.status(500).json({ error: "Failed to delete trail" })
     }
 }
+
+export async function patchApiTrail(req: Request<{ id: string }>, res: Response): Promise<void> {
+    try {
+        const id = Number(req.params.id)
+        const oldTrail = await getTrailById(id);
+        if (!oldTrail) {
+            res.status(404).json({ error: 'Trail not found' })
+            return
+        }
+
+        const body = req.body ?? {}
+        const data: TrailInput = {
+            region_id: body.region_id ?? oldTrail.region_id,
+            title: body.title ?? oldTrail.title,
+            difficulty: body.difficulty ?? oldTrail.difficulty,
+            distance_km: body.distance_km ?? oldTrail.distance_km,
+            description: sanitizeDescription(body.description ?? oldTrail.description),
+            image_url: body.image_url ?? oldTrail.image_url,
+        }
+        await updateTrail(id, data)
+        const updatedTrail = await getTrailBySlug(slugify(data.title))
+        res.json(updatedTrail);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to update trail" })
+    }
+}
+

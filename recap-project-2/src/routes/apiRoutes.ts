@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { listApiTrails, showApiTrail, createApiTrail, replaceApiTrail, deleteApiTrail } from "../controllers/apiTrailController";
+import { listApiTrails, showApiTrail, createApiTrail, replaceApiTrail, patchApiTrail, deleteApiTrail } from "../controllers/apiTrailController";
 import { listApiRegions, listApiRegionTrails } from "../controllers/apiRegionController";
 import { apiKey } from "../middleware/apiKey";
 import { rateLimit } from "../middleware/rateLimit";
@@ -10,6 +10,7 @@ router.get('/trails', listApiTrails)
 router.get('/trails/:slug', showApiTrail)
 router.post('/trails', apiKey, rateLimit, createApiTrail)
 router.put('/trails/:id', apiKey, rateLimit, replaceApiTrail)
+router.patch('/trails/:id', apiKey, rateLimit, patchApiTrail)
 router.delete('/trails/:id', apiKey, rateLimit, deleteApiTrail)
 
 router.get('/regions', listApiRegions)
