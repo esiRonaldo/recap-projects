@@ -5,16 +5,18 @@ import websiteRouter from "./routes/websiteRoutes"
 import adminRouter from "./routes/adminRoutes"
 import apiRouter from "./routes/apiRoutes"
 import { logger } from "./middleware/logger";
+import { DIFFICULTIES } from "./models/types";
 
 
 const app = express();
 const port = Number(process.env.PORT);
 
-nunjucks.configure("views", {
+const env = nunjucks.configure("views", {
   autoescape: true,
   express: app,
   watch: true,
 })
+env.addGlobal("difficulties", DIFFICULTIES)
 app.set("view engine", "html")
 
 app.use(express.static("public"))

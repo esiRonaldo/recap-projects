@@ -29,7 +29,7 @@
     <label>
         Difficulty
         <select name="difficulty">
-            {% for level in ["easy", "moderate", "hard"] %}
+            {% for level in difficulties %}
             <option value="{{ level }}" {% if trail and trail.difficulty == level %}selected{% endif %}>
                 {{ level }}
             </option>

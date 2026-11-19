@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { addTrail, deleteTrail, getAllTrails, getTrailById, getTrailBySlug, updateTrail } from "../models/trailModel";
-import type { TrailInput } from "../models/types";
+import { DIFFICULTIES, type TrailInput } from "../models/types";
 import { sanitizeDescription, slugify } from "../utils/common";
 import { getAllRegions } from "../models/regionModel";
 
@@ -15,7 +15,7 @@ async function validateApiTrail(body: Record<string, any>, id?: number): Promise
         if (sameSlugTrail && sameSlugTrail.id !== id) errorMessages.push("title is already used by another trail.");
     }
     if (typeof body.distance_km !== "number") errorMessages.push("distance_km is required and must be a number.");
-    if (!["easy", "moderate", "hard"].includes(body.difficulty)) errorMessages.push("difficulty must be easy, moderate or hard.");
+    if (!DIFFICULTIES.includes(body.difficulty)) errorMessages.push(`difficulty must be one of: ${DIFFICULTIES.join(", ")}.`);
 
     const regions = await getAllRegions();
     if (body.region_id === undefined) {

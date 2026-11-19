@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { addTrail, deleteTrail, getAllTrails, getTrailById, getTrailBySlug, updateTrail } from "../models/trailModel";
 import { getAllRegions } from "../models/regionModel";
-import type { Trail, TrailInput } from "../models/types";
+import { DIFFICULTIES, type Difficulty, type TrailInput } from "../models/types";
 import { sanitizeDescription, slugify } from "../utils/common";
 
 export async function listAdminTrails(req: Request, res: Response): Promise<void> {
@@ -18,7 +18,7 @@ function readTrailForm(body: Record<string, string>): TrailInput {
     return {
         region_id: Number(body.region_id),
         title: body.title ?? "",
-        difficulty: body.difficulty as Trail["difficulty"],
+        difficulty: body.difficulty as Difficulty,
         distance_km: Number(body.distance_km),
         description: sanitizeDescription(body.description),
         image_url: body.image_url || null,
@@ -29,7 +29,7 @@ async function validateTrailForm(body: Record<string, string>, id?: number): Pro
     if (!body.title?.trim()) return "Title is required.";
     if (!body.distance_km?.trim()) return "Distance is required.";
     if (!(Number(body.distance_km) > 0)) return "Distance must be a number greater than 0.";
-    if (!["easy", "moderate", "hard"].includes(body.difficulty ?? "")) return "Difficulty must be easy, moderate or hard.";
+    if (!DIFFICULTIES.includes(body.difficulty as Difficulty)) return `Difficulty must be one of: ${DIFFICULTIES.join(", ")}.`;
 
     const regions = await getAllRegions();
     if (!regions.some((region) => region.id === Number(body.region_id))) return "Please choose a valid region.";

@@ -6,12 +6,15 @@ export type Region = {
     description: string | null;
 };
 
+export const DIFFICULTIES = ["easy", "moderate", "hard"] as const;
+export type Difficulty = typeof DIFFICULTIES[number];
+
 export type Trail = {
     id: number;
     region_id: number;
     title: string;
     slug: string;
-    difficulty: "easy" | "moderate" | "hard";
+    difficulty: Difficulty;
     distance_km: number;
     description: string | null;
     image_url: string | null;
