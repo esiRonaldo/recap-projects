@@ -1,8 +1,7 @@
 import type { Request, Response } from "express";
 import { addTrail, deleteTrail, getAllTrails, getTrailById, getTrailBySlug, updateTrail } from "../models/trailModel";
 import type { TrailInput } from "../models/types";
-import { slugify } from "../utils/common";
-import sanitizeHtml from "sanitize-html";
+import { sanitizeDescription, slugify } from "../utils/common";
 import { getAllRegions } from "../models/regionModel";
 
 //TODO: refactor
@@ -54,10 +53,7 @@ export async function createApiTrail(req: Request, res: Response): Promise<void>
             title: req.body.title,
             difficulty: req.body.difficulty,
             distance_km: req.body.distance_km,
-            description: sanitizeHtml(req.body.description ?? "", {
-                allowedTags: ["p", "strong", "em", "ul", "ol", "li", "a"],
-                allowedAttributes: { a: ["href"] },
-            }) || null,
+            description: sanitizeDescription(req.body.description),
             image_url: req.body.image_url ?? null,
         }
 
@@ -89,10 +85,7 @@ export async function replaceApiTrail(req: Request<{ id: string }>, res: Respons
             title: req.body.title,
             difficulty: req.body.difficulty,
             distance_km: req.body.distance_km,
-            description: sanitizeHtml(req.body.description ?? "", {
-                allowedTags: ["p", "strong", "em", "ul", "ol", "li", "a"],
-                allowedAttributes: { a: ["href"] },
-            }) || null,
+            description: sanitizeDescription(req.body.description),
             image_url: req.body.image_url ?? null,
         }
         await updateTrail(id, data)
