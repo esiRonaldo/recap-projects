@@ -38,11 +38,11 @@ export async function newTrailForm(req: Request, res: Response): Promise<void> {
 
 
 export async function createTrail(req: Request, res: Response): Promise<void> {
-    const error = validateTrailForm(req.body);
+    const errorMessage = validateTrailForm(req.body);
 
-    if (error) {
+    if (errorMessage) {
         const regions = await getAllRegions();
-        res.status(400).render("admin/form", { trail: req.body, regions, error });
+        res.status(400).render("admin/form", { trail: req.body, regions, error: errorMessage });
         return;
     }
 
@@ -64,11 +64,11 @@ export async function editTrailForm(req: Request<{ id: string }>, res: Response)
 
 export async function saveTrail(req: Request<{ id: string }>, res: Response): Promise<void> {
     const id = Number(req.params.id);
-    const error = validateTrailForm(req.body);
+    const errorMessage = validateTrailForm(req.body);
 
-    if (error) {
+    if (errorMessage) {
         const regions = await getAllRegions();
-        res.status(400).render("admin/form", { trail: { ...req.body, id }, regions, error });
+        res.status(400).render("admin/form", { trail: { ...req.body, id }, regions, error: errorMessage });
         return;
     }
 

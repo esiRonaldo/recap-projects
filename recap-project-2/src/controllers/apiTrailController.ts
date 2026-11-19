@@ -4,18 +4,22 @@ import type { TrailInput } from "../models/types";
 import { sanitizeDescription, slugify } from "../utils/common";
 import { getAllRegions } from "../models/regionModel";
 
-//TODO: refactor
-async function validateApiTrail(body: Record<string, any>): Promise<string | null> {
-    if (!body) return "Body is required.";
-    if (!body.title) return "title is required.";
-    if (typeof body.distance_km !== "number") return "distance_km is required and must be a number.";
-    if (!["easy", "moderate", "hard"].includes(body.difficulty)) return "difficulty must be easy, moderate or hard.";
-    if (body.region_id === undefined) return "region_id is required.";
+async function validateApiTrail(body: Record<string, any>): Promise<string[]> {
+    if (!body) return ["Body is required."];
+
+    const errorMessages: string[] = [];
+    if (!body.title) errorMessages.push("title is required.");
+    if (typeof body.distance_km !== "number") errorMessages.push("distance_km is required and must be a number.");
+    if (!["easy", "moderate", "hard"].includes(body.difficulty)) errorMessages.push("difficulty must be easy, moderate or hard.");
 
     const regions = await getAllRegions();
-    if (!regions.some((region) => region.id === body.region_id)) return "region_id does not match any region.";
+    if (body.region_id === undefined) {
+        errorMessages.push("region_id is required.");
+    } else if (!regions.some((region) => region.id === body.region_id)) {
+        errorMessages.push("region_id does not match any region.");
+    }
 
-    return null;
+    return errorMessages;
 }
 
 export async function showApiTrail(req: Request<{ slug: string }>, res: Response): Promise<void> {
@@ -42,9 +46,9 @@ export async function listApiTrails(req: Request, res: Response): Promise<void> 
 
 export async function createApiTrail(req: Request, res: Response): Promise<void> {
     try {
-        const error = await validateApiTrail(req.body)
-        if (error) {
-            res.status(400).json({ error })
+        const errorMessages = await validateApiTrail(req.body)
+        if (errorMessages.length > 0) {
+            res.status(400).json({ errors: errorMessages })
             return
         }
 
@@ -74,9 +78,9 @@ export async function replaceApiTrail(req: Request<{ id: string }>, res: Respons
             return
         }
 
-        const error = await validateApiTrail(req.body)
-        if (error) {
-            res.status(400).json({ error })
+        const errorMessages = await validateApiTrail(req.body)
+        if (errorMessages.length > 0) {
+            res.status(400).json({ errors: errorMessages })
             return
         }
 
