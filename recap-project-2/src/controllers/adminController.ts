@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { addTrail, deleteTrail, getAllTrails, getTrailById, getTrailBySlug, updateTrail } from "../models/trailModel";
-import { getAllRegions } from "../models/regionModel";
+import { getAllRegions, getRegionById } from "../models/regionModel";
 import { DIFFICULTIES, type Difficulty, type TrailInput } from "../models/types";
 import { sanitizeDescription, slugify } from "../utils/common";
 
@@ -31,8 +31,7 @@ async function validateTrailForm(body: Record<string, string>, id?: number): Pro
     if (!(Number(body.distance_km) > 0)) return "Distance must be a number greater than 0.";
     if (!DIFFICULTIES.includes(body.difficulty as Difficulty)) return `Difficulty must be one of: ${DIFFICULTIES.join(", ")}.`;
 
-    const regions = await getAllRegions();
-    if (!regions.some((region) => region.id === Number(body.region_id))) return "Please choose a valid region.";
+    if (!(await getRegionById(Number(body.region_id)))) return "Please choose a valid region.";
 
     const sameSlugTrail = await getTrailBySlug(slugify(body.title));
     if (sameSlugTrail && sameSlugTrail.id !== id) return "A trail with this title already exists.";

@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { addTrail, deleteTrail, getAllTrails, getTrailById, getTrailBySlug, updateTrail } from "../models/trailModel";
 import { DIFFICULTIES, type TrailInput } from "../models/types";
 import { sanitizeDescription, slugify } from "../utils/common";
-import { getAllRegions } from "../models/regionModel";
+import { getRegionById } from "../models/regionModel";
 
 async function validateApiTrail(body: Record<string, any>, id?: number): Promise<string[]> {
     if (!body) return ["Body is required."];
@@ -17,10 +17,9 @@ async function validateApiTrail(body: Record<string, any>, id?: number): Promise
     if (typeof body.distance_km !== "number" || body.distance_km <= 0) errorMessages.push("distance_km is required and must be a number greater than 0.");
     if (!DIFFICULTIES.includes(body.difficulty)) errorMessages.push(`difficulty must be one of: ${DIFFICULTIES.join(", ")}.`);
 
-    const regions = await getAllRegions();
     if (body.region_id === undefined) {
         errorMessages.push("region_id is required.");
-    } else if (!regions.some((region) => region.id === body.region_id)) {
+    } else if (typeof body.region_id !== "number" || !(await getRegionById(body.region_id))) {
         errorMessages.push("region_id does not match any region.");
     }
 

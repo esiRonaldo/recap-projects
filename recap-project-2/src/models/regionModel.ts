@@ -9,6 +9,11 @@ export async function getAllRegions(): Promise<Region[]> {
     )
 }
 
+export async function getRegionById(id: number): Promise<Region | undefined> {
+    const db = getDB()
+    return db.get<Region>(`SELECT * FROM regions WHERE id = ?`, id)
+}
+
 export async function getRegionBySlug(slug: string): Promise<Region | undefined> {
     const db = getDB()
     return db.get<Region>(`
