@@ -5,6 +5,7 @@ import websiteRouter from "./routes/websiteRoutes"
 import adminRouter from "./routes/adminRoutes"
 import apiRouter from "./routes/apiRoutes"
 import { logger } from "./middleware/logger";
+import { apiErrorHandler } from "./middleware/apiErrorHandler";
 import { DIFFICULTIES } from "./models/types";
 
 
@@ -26,6 +27,7 @@ app.use(express.json())
 app.use('/', websiteRouter)
 app.use('/admin', adminRouter)
 app.use('/api', apiRouter)
+app.use('/api', apiErrorHandler)
 
 app.use((req, res) => {
   res.status(404).render("404", { message: "This page does not exist." })

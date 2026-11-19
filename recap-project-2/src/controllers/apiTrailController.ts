@@ -38,114 +38,89 @@ function readApiTrail(body: Record<string, any>): TrailInput {
 }
 
 export async function showApiTrail(req: Request<{ slug: string }>, res: Response): Promise<void> {
-    try {
-        const trail = await getTrailBySlug(req.params.slug)
-        if (!trail) {
-            res.status(404).json({ error: 'Trail not found' })
-            return
-        }
-        res.json(trail)
-    } catch (err) {
-        res.status(500).json({ error: "Failed to load trail" })
+    const trail = await getTrailBySlug(req.params.slug)
+    if (!trail) {
+        res.status(404).json({ error: 'Trail not found' })
+        return
     }
+    res.json(trail)
 }
 
 export async function listApiTrails(req: Request, res: Response): Promise<void> {
-    try {
-        const trails = await getAllTrails();
-        res.json(trails);
-    } catch (err) {
-        res.status(500).json({ error: "Failed to load trails" })
-    }
+    const trails = await getAllTrails();
+    res.json(trails);
 }
 
 export async function createApiTrail(req: Request, res: Response): Promise<void> {
-    try {
-        const errorMessages = await validateApiTrail(req.body)
-        if (errorMessages.length > 0) {
-            res.status(400).json({ errors: errorMessages })
-            return
-        }
-
-        const data = readApiTrail(req.body)
-        await addTrail(data)
-        const trail = await getTrailBySlug(slugify(data.title))
-        res.status(201).json(trail)
-    } catch (err) {
-        res.status(500).json({ error: "Failed to create trail" })
+    const errorMessages = await validateApiTrail(req.body)
+    if (errorMessages.length > 0) {
+        res.status(400).json({ errors: errorMessages })
+        return
     }
+
+    const data = readApiTrail(req.body)
+    await addTrail(data)
+    const trail = await getTrailBySlug(slugify(data.title))
+    res.status(201).json(trail)
 }
 
 export async function replaceApiTrail(req: Request<{ id: string }>, res: Response): Promise<void> {
-    try {
-        const id = Number(req.params.id)
-        const oldTrail = await getTrailById(id);
-        if (!oldTrail) {
-            res.status(404).json({ error: 'Trail not found' })
-            return
-        }
-
-        const errorMessages = await validateApiTrail(req.body, id)
-        if (errorMessages.length > 0) {
-            res.status(400).json({ errors: errorMessages })
-            return
-        }
-
-        const data = readApiTrail(req.body)
-        await updateTrail(id, data)
-        const updatedTrail = await getTrailBySlug(slugify(data.title))
-        res.json(updatedTrail);
-    } catch (err) {
-        res.status(500).json({ error: "Failed to update trail" })
+    const id = Number(req.params.id)
+    const oldTrail = await getTrailById(id);
+    if (!oldTrail) {
+        res.status(404).json({ error: 'Trail not found' })
+        return
     }
+
+    const errorMessages = await validateApiTrail(req.body, id)
+    if (errorMessages.length > 0) {
+        res.status(400).json({ errors: errorMessages })
+        return
+    }
+
+    const data = readApiTrail(req.body)
+    await updateTrail(id, data)
+    const updatedTrail = await getTrailBySlug(slugify(data.title))
+    res.json(updatedTrail);
 }
 
 export async function deleteApiTrail(req: Request<{ id: string }>, res: Response): Promise<void> {
-    try {
-        const id = Number(req.params.id)
-        const trail = await getTrailById(id);
-        if (!trail) {
-            res.status(404).json({ error: 'Trail not found' })
-            return
-        }
-
-        await deleteTrail(id)
-        res.status(204).end();
-    } catch (err) {
-        res.status(500).json({ error: "Failed to delete trail" })
+    const id = Number(req.params.id)
+    const trail = await getTrailById(id);
+    if (!trail) {
+        res.status(404).json({ error: 'Trail not found' })
+        return
     }
+
+    await deleteTrail(id)
+    res.status(204).end();
 }
 
 export async function patchApiTrail(req: Request<{ id: string }>, res: Response): Promise<void> {
-    try {
-        const id = Number(req.params.id)
-        const oldTrail = await getTrailById(id);
-        if (!oldTrail) {
-            res.status(404).json({ error: 'Trail not found' })
-            return
-        }
-
-        const body = req.body ?? {}
-        const data: TrailInput = {
-            region_id: body.region_id ?? oldTrail.region_id,
-            title: body.title ?? oldTrail.title,
-            difficulty: body.difficulty ?? oldTrail.difficulty,
-            distance_km: body.distance_km ?? oldTrail.distance_km,
-            description: sanitizeDescription(body.description ?? oldTrail.description),
-            image_url: body.image_url ?? oldTrail.image_url,
-        }
-
-        const errorMessages = await validateApiTrail(data, id)
-        if (errorMessages.length > 0) {
-            res.status(400).json({ errors: errorMessages })
-            return
-        }
-
-        await updateTrail(id, data)
-        const updatedTrail = await getTrailBySlug(slugify(data.title))
-        res.json(updatedTrail);
-    } catch (err) {
-        res.status(500).json({ error: "Failed to update trail" })
+    const id = Number(req.params.id)
+    const oldTrail = await getTrailById(id);
+    if (!oldTrail) {
+        res.status(404).json({ error: 'Trail not found' })
+        return
     }
-}
 
+    const body = req.body ?? {}
+    const data: TrailInput = {
+        region_id: body.region_id ?? oldTrail.region_id,
+        title: body.title ?? oldTrail.title,
+        difficulty: body.difficulty ?? oldTrail.difficulty,
+        distance_km: body.distance_km ?? oldTrail.distance_km,
+        description: sanitizeDescription(body.description ?? oldTrail.description),
+        image_url: body.image_url ?? oldTrail.image_url,
+    }
+
+    const errorMessages = await validateApiTrail(data, id)
+    if (errorMessages.length > 0) {
+        res.status(400).json({ errors: errorMessages })
+        return
+    }
+
+    await updateTrail(id, data)
+    const updatedTrail = await getTrailBySlug(slugify(data.title))
+    res.json(updatedTrail);
+}
