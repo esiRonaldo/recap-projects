@@ -4,11 +4,16 @@ import type { TrailInput } from "../models/types";
 import { sanitizeDescription, slugify } from "../utils/common";
 import { getAllRegions } from "../models/regionModel";
 
-async function validateApiTrail(body: Record<string, any>): Promise<string[]> {
+async function validateApiTrail(body: Record<string, any>, id?: number): Promise<string[]> {
     if (!body) return ["Body is required."];
 
     const errorMessages: string[] = [];
-    if (!body.title) errorMessages.push("title is required.");
+    if (!body.title) {
+        errorMessages.push("title is required.");
+    } else {
+        const sameSlugTrail = await getTrailBySlug(slugify(body.title));
+        if (sameSlugTrail && sameSlugTrail.id !== id) errorMessages.push("title is already used by another trail.");
+    }
     if (typeof body.distance_km !== "number") errorMessages.push("distance_km is required and must be a number.");
     if (!["easy", "moderate", "hard"].includes(body.difficulty)) errorMessages.push("difficulty must be easy, moderate or hard.");
 
@@ -78,7 +83,7 @@ export async function replaceApiTrail(req: Request<{ id: string }>, res: Respons
             return
         }
 
-        const errorMessages = await validateApiTrail(req.body)
+        const errorMessages = await validateApiTrail(req.body, id)
         if (errorMessages.length > 0) {
             res.status(400).json({ errors: errorMessages })
             return
@@ -135,7 +140,7 @@ export async function patchApiTrail(req: Request<{ id: string }>, res: Response)
             image_url: body.image_url ?? oldTrail.image_url,
         }
 
-        const errorMessages = await validateApiTrail(data)
+        const errorMessages = await validateApiTrail(data, id)
         if (errorMessages.length > 0) {
             res.status(400).json({ errors: errorMessages })
             return

@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
-import { addTrail, deleteTrail, getAllTrails, getTrailById, updateTrail } from "../models/trailModel";
+import { addTrail, deleteTrail, getAllTrails, getTrailById, getTrailBySlug, updateTrail } from "../models/trailModel";
 import { getAllRegions } from "../models/regionModel";
 import type { Trail, TrailInput } from "../models/types";
-import { sanitizeDescription } from "../utils/common";
+import { sanitizeDescription, slugify } from "../utils/common";
 
 export async function listAdminTrails(req: Request, res: Response): Promise<void> {
     const trails = await getAllTrails()
@@ -25,9 +25,13 @@ function readTrailForm(body: Record<string, string>): TrailInput {
     };
 }
 
-function validateTrailForm(body: Record<string, string>): string | null {
+async function validateTrailForm(body: Record<string, string>, id?: number): Promise<string | null> {
     if (!body.title?.trim()) return "Title is required.";
     if (!body.distance_km?.trim()) return "Distance is required.";
+
+    const sameSlugTrail = await getTrailBySlug(slugify(body.title));
+    if (sameSlugTrail && sameSlugTrail.id !== id) return "A trail with this title already exists.";
+
     return null;
 }
 
@@ -38,7 +42,7 @@ export async function newTrailForm(req: Request, res: Response): Promise<void> {
 
 
 export async function createTrail(req: Request, res: Response): Promise<void> {
-    const errorMessage = validateTrailForm(req.body);
+    const errorMessage = await validateTrailForm(req.body);
 
     if (errorMessage) {
         const regions = await getAllRegions();
@@ -64,7 +68,7 @@ export async function editTrailForm(req: Request<{ id: string }>, res: Response)
 
 export async function saveTrail(req: Request<{ id: string }>, res: Response): Promise<void> {
     const id = Number(req.params.id);
-    const errorMessage = validateTrailForm(req.body);
+    const errorMessage = await validateTrailForm(req.body, id);
 
     if (errorMessage) {
         const regions = await getAllRegions();
