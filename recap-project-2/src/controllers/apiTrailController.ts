@@ -14,7 +14,7 @@ async function validateApiTrail(body: Record<string, any>, id?: number): Promise
         const sameSlugTrail = await getTrailBySlug(slugify(body.title));
         if (sameSlugTrail && sameSlugTrail.id !== id) errorMessages.push("title is already used by another trail.");
     }
-    if (typeof body.distance_km !== "number") errorMessages.push("distance_km is required and must be a number.");
+    if (typeof body.distance_km !== "number" || body.distance_km <= 0) errorMessages.push("distance_km is required and must be a number greater than 0.");
     if (!DIFFICULTIES.includes(body.difficulty)) errorMessages.push(`difficulty must be one of: ${DIFFICULTIES.join(", ")}.`);
 
     const regions = await getAllRegions();
