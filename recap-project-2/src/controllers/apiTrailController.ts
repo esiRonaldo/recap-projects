@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { addTrail, deleteTrail, getAllTrails, getTrailById, getTrailBySlug, updateTrail } from "../models/trailModel";
-import { DIFFICULTIES, type TrailFilters, type TrailInput } from "../models/types";
+import { DIFFICULTIES, type Difficulty, type TrailFilters, type TrailInput } from "../models/types";
 import { sanitizeDescription, slugify } from "../utils/common";
 import { getRegionById } from "../models/regionModel";
 
@@ -47,6 +47,12 @@ export async function showApiTrail(req: Request<{ slug: string }>, res: Response
 }
 
 export async function listApiTrails(req: Request<{}, {}, {}, TrailFilters>, res: Response): Promise<void> {
+    const difficulty = req.query.difficulty
+    if (difficulty && !DIFFICULTIES.includes(difficulty as Difficulty)) {
+        res.status(400).json({ errors: [`difficulty must be one of: ${DIFFICULTIES.join(", ")}.`] })
+        return
+    }
+
     const trails = await getAllTrails(req.query);
     res.json(trails);
 }
