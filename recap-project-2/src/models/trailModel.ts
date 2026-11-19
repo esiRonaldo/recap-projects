@@ -1,16 +1,36 @@
 import { getDB } from "./db";
-import type { Trail, TrailInput, TrailWithRegion } from "./types";
+import type { Trail, TrailFilters, TrailInput, TrailWithRegion } from "./types";
 import { slugify } from "../utils/common";
 
-export async function getAllTrails(): Promise<TrailWithRegion[]> {
+export async function getAllTrails(filters: TrailFilters = {}): Promise<TrailWithRegion[]> {
   const db = getDB();
+  const conditions: string[] = [];
+  const params: string[] = [];
+
+  if (filters.region) {
+    conditions.push("regions.slug = ?");
+    params.push(filters.region);
+  }
+  if (filters.difficulty) {
+    conditions.push("trails.difficulty = ?");
+    params.push(filters.difficulty);
+  }
+  if (filters.q) {
+    conditions.push("trails.title LIKE ?");
+    params.push(`%${filters.q}%`);
+  }
+
+  const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
   return db.all<TrailWithRegion[]>(
     `SELECT trails.*,
             regions.name AS region_name,
             regions.country AS region_country
      FROM trails
      INNER JOIN regions ON trails.region_id = regions.id
-     ORDER BY trails.created_at DESC`
+     ${where}
+     ORDER BY trails.created_at DESC`,
+    params
   );
 }
 

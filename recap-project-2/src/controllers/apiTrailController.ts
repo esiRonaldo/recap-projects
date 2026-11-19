@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { addTrail, deleteTrail, getAllTrails, getTrailById, getTrailBySlug, updateTrail } from "../models/trailModel";
-import { DIFFICULTIES, type TrailInput } from "../models/types";
+import { DIFFICULTIES, type TrailFilters, type TrailInput } from "../models/types";
 import { sanitizeDescription, slugify } from "../utils/common";
 import { getRegionById } from "../models/regionModel";
 
@@ -46,8 +46,8 @@ export async function showApiTrail(req: Request<{ slug: string }>, res: Response
     res.json(trail)
 }
 
-export async function listApiTrails(req: Request, res: Response): Promise<void> {
-    const trails = await getAllTrails();
+export async function listApiTrails(req: Request<{}, {}, {}, TrailFilters>, res: Response): Promise<void> {
+    const trails = await getAllTrails(req.query);
     res.json(trails);
 }
 

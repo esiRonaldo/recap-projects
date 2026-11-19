@@ -26,3 +26,9 @@ export type TrailWithRegion = Trail & {
 }
 
 export type TrailInput = Omit<Trail, "id" | "slug" | "created_at">;
+
+export type TrailFilters = {
+    region?: string;
+    difficulty?: string;
+    q?: string;
+};
